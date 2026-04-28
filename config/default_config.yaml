@@ -1,0 +1,486 @@
+runtime:
+  output_dir: output
+  log_dir: logs
+  temp_dir: output/.tmp
+  request_timeout_seconds: 20
+  image_download_timeout_seconds: 20
+  retries: 3
+  max_workers: 10
+  article_limit_per_source: 10
+  max_articles_for_analysis: 40
+  min_items_for_section_analysis: 2
+  max_items_per_section: 5
+  recent_hours: 168
+  start_date:
+  end_date:
+  keep_temp_images: false
+  document_name_template: "每日AI资讯_{timestamp}.docx"
+  filename_time_format: "%Y%m%d_%H%M"
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0 Safari/537.36"
+
+schedule:
+  daily_time: "09:00"
+
+summary:
+  min_chars: 100
+  max_chars: 300
+
+quality:
+  min_score: 68
+
+llm:
+  enabled: true
+  provider: qwen
+  model: qwen-turbo-latest
+  api_key_env: DASHSCOPE_API_KEY
+  temperature: 0.2
+  top_p: 0.8
+  max_workers: 5
+
+document:
+  title: "每日AI资讯摘编"
+  subtitle_prefix: "内部参考"
+  title_font: "方正小标宋_GBK"
+  heading_font: "黑体"
+  body_font: "仿宋_GB2312"
+  emphasis_font: "楷体_GB2312"
+  title_size_pt: 22
+  heading_size_pt: 16
+  body_size_pt: 14
+  caption_size_pt: 11
+  line_spacing_pt: 28
+  image_width_inches: 5.8
+  include_url: true
+  sections:
+    - key: ai_application
+      label: "一、AI应用"
+    - key: ai_model
+      label: "二、AI模型"
+    - key: ai_safety
+      label: "三、AI安全"
+    - key: ai_investment
+      label: "四、AI投融资"
+    - key: research_paper
+      label: "五、最新研究论文"
+
+filtering:
+  include_keywords:
+    - AI
+    - 人工智能
+    - 大模型
+    - 生成式AI
+    - 机器学习
+    - 多模态
+    - 智能体
+    - Agent
+    - LLM
+    - GPT
+    - Claude
+    - Gemini
+    - Qwen
+    - DeepSeek
+    - inference
+    - reasoning
+    - open source model
+    - foundation model
+    - machine learning
+    - artificial intelligence
+  exclude_keywords:
+    - 招聘
+    - 课程
+    - 培训
+    - 广告
+    - 软文
+    - 直播报名
+    - 活动回顾
+    - 报名入口
+    - 促销
+    - 自媒体运营
+    - 带货
+    - 返佣
+    - 加群
+    - 微信咨询
+    - 股票荐股
+    - 娱乐八卦
+  category_keywords:
+    ai_application:
+      - 应用
+      - 落地
+      - 行业
+      - 医疗
+      - 教育
+      - 金融
+      - 工业
+      - 消费
+      - 企业服务
+      - workflow
+      - assistant
+      - productivity
+      - deployment
+      - real-world
+      - enterprise
+    ai_model:
+      - 模型
+      - 开源
+      - 权重
+      - benchmark
+      - inference
+      - reasoning
+      - multimodal
+      - agent model
+      - GPT
+      - Claude
+      - Qwen
+      - Gemini
+      - Grok
+      - DeepSeek
+      - Llama
+      - transformer
+    ai_safety:
+      - 安全
+      - 伦理
+      - 风险
+      - 数据安全
+      - policy
+      - regulation
+      - security
+      - safety
+      - misuse
+      - jailbreak
+      - leakage
+      - guardrail
+    ai_investment:
+      - 融资
+      - 并购
+      - 收购
+      - 上市
+      - 估值
+      - 投资
+      - funding
+      - acquisition
+      - valuation
+      - series a
+      - series b
+      - seed
+      - ipo
+    research_paper:
+      - arxiv
+      - 论文
+      - paper
+      - neurips
+      - icml
+      - cvpr
+      - iclr
+      - aaai
+      - acl
+      - emnlp
+      - research
+      - dataset
+      - benchmark
+
+sources:
+  - name: "量子位"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://www.qbitai.com/"
+    url: "https://www.qbitai.com/"
+    locale: "zh"
+    source_weight: 1.35
+    max_items: 10
+    assume_relevant: true
+    listing_selectors:
+      - "a[href*='qbitai.com/20']"
+    include_patterns:
+      - "qbitai.com/20"
+    article_selectors:
+      - "article"
+      - ".entry-content"
+      - ".article-content"
+      - "main"
+
+  - name: "新智元"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://aiera.com.cn/"
+    url: "https://aiera.com.cn/"
+    locale: "zh"
+    source_weight: 1.30
+    max_items: 10
+    assume_relevant: true
+    listing_selectors:
+      - "a[href*='aiera.com.cn/20']"
+    include_patterns:
+      - "aiera.com.cn/20"
+    article_selectors:
+      - "article"
+      - ".entry-content"
+      - ".article-content"
+      - "main"
+
+  - name: "稀土掘金 AI"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://juejin.cn/ai?sort=newest"
+    url: "https://juejin.cn/more_posts/ai"
+    locale: "zh"
+    source_weight: 1.24
+    max_items: 10
+    assume_relevant: false
+    listing_selectors:
+      - "a[href*='/post/']"
+    include_patterns:
+      - "/post/"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".article-content"
+      - ".markdown-body"
+      - ".main-area"
+
+  - name: "AIbase"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://news.aibase.com/zh/daily"
+    url: "https://news.aibase.com/zh/daily"
+    locale: "zh"
+    source_weight: 1.20
+    max_items: 10
+    assume_relevant: true
+    listing_selectors:
+      - "a[href*='/zh/daily/']"
+    include_patterns:
+      - "/zh/daily/"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".article-content"
+      - ".prose"
+      - ".content"
+
+  - name: "36Kr AI"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://36kr.com/information/AI/"
+    url: "https://36kr.com/information/AI/"
+    locale: "zh"
+    source_weight: 1.16
+    max_items: 10
+    assume_relevant: true
+    listing_selectors:
+      - "a[href*='/p/']"
+    include_patterns:
+      - "/p/"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".article-content"
+      - ".kr-rich-text-wrapper"
+      - ".text-format"
+
+  - name: "AIHotToday"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://aihot.today/"
+    url: "https://aihot.today/"
+    locale: "zh"
+    source_weight: 1.10
+    max_items: 10
+    assume_relevant: true
+    external_only: true
+    listing_selectors:
+      - "a[href^='https://']"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".article-content"
+      - ".entry-content"
+
+  - name: "AI方案库"
+    region: "domestic"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://d.aigclink.ai/?v=8f252a54730e49f4b8caf897b7ae49f6"
+    url: "https://d.aigclink.ai/?v=8f252a54730e49f4b8caf897b7ae49f6"
+    locale: "zh"
+    source_weight: 1.06
+    max_items: 10
+    assume_relevant: false
+    same_domain_only: true
+    article_selectors:
+      - "article"
+      - "main"
+      - ".notion-page-content"
+
+  - name: "Pandaily AI"
+    region: "domestic"
+    enabled: true
+    kind: "rss"
+    homepage_url: "https://pandaily.com/category/ai"
+    url: "https://pandaily.com/feed"
+    locale: "en"
+    source_weight: 1.04
+    max_items: 10
+    assume_relevant: true
+    required_entry_tags:
+      - "AI"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".entry-content"
+      - ".prose"
+
+  - name: "MarkTechPost"
+    region: "foreign"
+    enabled: true
+    kind: "rss"
+    homepage_url: "https://www.marktechpost.com/category/artificial-intelligence/"
+    url: "https://www.marktechpost.com/category/artificial-intelligence/feed/"
+    locale: "en"
+    source_weight: 1.25
+    max_items: 10
+    assume_relevant: true
+    article_selectors:
+      - "article"
+      - "main"
+      - ".entry-content"
+      - ".post-content"
+
+  - name: "TechCrunch AI"
+    region: "foreign"
+    enabled: true
+    kind: "rss"
+    homepage_url: "https://techcrunch.com/category/artificial-intelligence/"
+    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    locale: "en"
+    source_weight: 1.20
+    max_items: 10
+    assume_relevant: true
+    article_selectors:
+      - "article"
+      - "main"
+      - ".article-content"
+      - ".entry-content"
+
+  - name: "Tech Funding News AI Funding"
+    region: "foreign"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://techfundingnews.com/tag/artificial-intelligence/"
+    url: "https://techfundingnews.com/tag/artificial-intelligence/"
+    locale: "en"
+    source_weight: 1.14
+    max_items: 12
+    assume_relevant: true
+    forced_category: "ai_investment"
+    same_domain_only: true
+    listing_selectors:
+      - "article h2 a"
+      - "article h3 a"
+    include_patterns:
+      - "techfundingnews.com/"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".entry-content"
+      - ".td-post-content"
+    required_entry_keywords:
+      - "raises"
+      - "raised"
+      - "funding"
+      - "seed"
+      - "series"
+      - "investor"
+      - "investors"
+      - "backed"
+      - "backs"
+      - "deal"
+      - "acquisition"
+      - "acquire"
+      - "lands"
+
+  - name: "NVIDIA Developer Blog"
+    region: "foreign"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://developer.nvidia.com/blog"
+    url: "https://developer.nvidia.com/blog/category/generative-ai/"
+    locale: "en"
+    source_weight: 1.15
+    max_items: 10
+    assume_relevant: true
+    listing_selectors:
+      - "a[href*='developer.nvidia.com/blog/']"
+    include_patterns:
+      - "developer.nvidia.com/blog/"
+    exclude_patterns:
+      - "/category/"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".post-content"
+      - ".entry-content"
+
+  - name: "Anthropic Blog"
+    region: "foreign"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://www.anthropic.com/news"
+    url: "https://www.anthropic.com/news"
+    locale: "en"
+    source_weight: 1.10
+    max_items: 10
+    assume_relevant: true
+    listing_selectors:
+      - "a[href*='/news/']"
+      - "a[href='/mars']"
+      - "a[href='/81k-interviews']"
+    include_patterns:
+      - "/news/"
+      - "/mars"
+      - "/81k-interviews"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".prose"
+      - ".content"
+
+  - name: "Papers with Code"
+    region: "research"
+    enabled: true
+    kind: "html"
+    homepage_url: "https://paperswithcode.com/latest"
+    url: "https://paperswithcode.com/latest"
+    locale: "en"
+    source_weight: 1.08
+    max_items: 8
+    assume_relevant: true
+    forced_category: "research_paper"
+    prefer_listing_title: true
+    listing_selectors:
+      - "a[href*='/papers/']"
+    include_patterns:
+      - "/papers/"
+    article_selectors:
+      - "article"
+      - "main"
+      - ".paper-abstract"
+      - ".item-paper"
+
+  - name: "arXiv cs.AI"
+    region: "research"
+    enabled: true
+    kind: "rss"
+    homepage_url: "https://arxiv.org/list/cs.AI/recent"
+    url: "http://export.arxiv.org/rss/cs.AI"
+    locale: "en"
+    source_weight: 1.18
+    max_items: 20
+    assume_relevant: true
+    forced_category: "research_paper"
+    skip_hydration: true

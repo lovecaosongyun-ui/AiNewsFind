@@ -1,0 +1,23 @@
+每日AI资讯抓取统计
+生成时间：2026-04-07 09:07
+候选资讯总数：202
+正文资讯总数：13
+
+分站点统计：
+站点 | 启用 | 权重 | 计划抓取 | 抓取数 | 筛后数 | 去重后数 | 最终入选数 | 状态 | 备注
+----------------------------------------------------------------------------------------------------
+量子位 | 是 | 1.35 | 30 | 28 | 6 | 6 | 3 | ok | 
+新智元 | 是 | 1.30 | 30 | 14 | 0 | 0 | 0 | ok | 
+稀土掘金 AI | 是 | 1.24 | 30 | 20 | 18 | 18 | 2 | ok | 
+AIbase | 是 | 1.20 | 30 | 20 | 0 | 0 | 0 | ok | 
+36Kr AI | 是 | 1.16 | 30 | 29 | 10 | 9 | 2 | ok | 
+AIHotToday | 是 | 1.10 | 30 | 0 | 0 | 0 | 0 | error | HTTPSConnectionPool(host='aihot.today', port=443): Max retries exceeded with url: / (Caused by ProtocolError('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None)))
+AI方案库 | 是 | 1.06 | 30 | 0 | 0 | 0 | 0 | empty | 
+Pandaily AI | 是 | 1.04 | 30 | 1 | 0 | 0 | 0 | ok | 
+MarkTechPost | 是 | 1.25 | 30 | 10 | 2 | 2 | 0 | ok | 
+TechCrunch AI | 是 | 1.20 | 30 | 18 | 8 | 8 | 1 | ok | 
+NVIDIA Developer Blog | 是 | 1.15 | 30 | 16 | 0 | 0 | 0 | ok | 
+Anthropic Blog | 是 | 1.10 | 30 | 16 | 0 | 0 | 0 | ok | 
+Papers with Code | 是 | 1.08 | 30 | 0 | 0 | 0 | 0 | error | HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /papers/trending (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x0000015DD5DF60D0>, 'Connection to huggingface.co timed out. (connect timeout=20)'))
+Tech Funding News AI Funding | 是 | 1.14 | 30 | 0 | 0 | 0 | 0 | error | HTTPSConnectionPool(host='techfundingnews.com', port=443): Max retries exceeded with url: /tag/artificial-intelligence/ (Caused by ProtocolError('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None)))
+arXiv cs.AI | 是 | 1.18 | 30 | 30 | 30 | 30 | 5 | ok | 

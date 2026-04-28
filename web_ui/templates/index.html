@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>每日AI资讯智能体控制台</title>
+  <link rel="stylesheet" href="/static/styles.css?v={{ asset_version }}" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="hero-kicker">AI 资讯日报生成系统</p>
+        <h1>每日 AI 资讯智能体控制台</h1>
+        <p class="hero-subtitle">面向央国企与政府内部材料风格的日报生成界面，支持配置保存、站点管理、时间范围筛选与多格式下载。</p>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-box">
+          <span class="meta-label">访问地址</span>
+          <strong>http://127.0.0.1:8001</strong>
+        </div>
+        <div class="meta-box">
+          <span class="meta-label">保存位置</span>
+          <strong>{{ saved_config_path }}</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>基础配置</h2>
+            <p>配置抓取时间范围、摘要长度、质量阈值和入选数量。</p>
+          </div>
+          <div class="status-group">
+            <span id="dirty-indicator" class="status-badge status-saved">当前配置已保存</span>
+            <span id="action-status" class="status-text">等待操作</span>
+          </div>
+        </div>
+
+        <form id="settings-form" class="config-form" autocomplete="off">
+          <div class="field-grid">
+            <label class="field">
+              <span>开始日期</span>
+              <input type="date" id="start_date" />
+            </label>
+            <label class="field">
+              <span>结束日期</span>
+              <input type="date" id="end_date" />
+            </label>
+            <label class="field">
+              <span>回退抓取时长（小时）</span>
+              <input type="number" id="recent_hours" min="1" />
+            </label>
+            <label class="field">
+              <span>全局抓取上限</span>
+              <input type="number" id="article_limit_per_source" min="1" />
+            </label>
+            <label class="field">
+              <span>每个模块最多入选</span>
+              <input type="number" id="max_items_per_section" min="1" />
+            </label>
+            <label class="field">
+              <span>候选分析上限</span>
+              <input type="number" id="max_articles_for_analysis" min="1" />
+            </label>
+            <label class="field">
+              <span>模块保底分析数</span>
+              <input type="number" id="min_items_for_section_analysis" min="1" />
+            </label>
+            <label class="field">
+              <span>摘要最少字数</span>
+              <input type="number" id="summary_min_chars" min="50" />
+            </label>
+            <label class="field">
+              <span>摘要最多字数</span>
+              <input type="number" id="summary_max_chars" min="80" />
+            </label>
+            <label class="field">
+              <span>质量评分阈值</span>
+              <input type="number" id="quality_min_score" min="0" max="100" />
+            </label>
+          </div>
+
+          <div class="switch-row">
+            <label class="switch-field">
+              <input type="checkbox" id="llm_enabled" />
+              <span>启用 Qwen 摘要与翻译</span>
+            </label>
+          </div>
+        </form>
+
+        <div class="button-row">
+          <button type="button" id="save-button" class="btn btn-primary">保存配置</button>
+          <button type="button" id="restore-button" class="btn btn-secondary">恢复默认</button>
+          <button type="button" id="generate-button" class="btn btn-accent">生成日报</button>
+        </div>
+      </section>
+
+      <section id="result-panel" class="panel result-panel">
+        <div class="panel-header">
+          <div>
+            <h2>生成结果</h2>
+            <p>生成完成后可直接下载 Word、Markdown 和统计 TXT。</p>
+          </div>
+        </div>
+        <div class="progress-card">
+          <div class="progress-head">
+            <div>
+              <strong id="progress-stage">等待生成</strong>
+              <div id="progress-message" class="helper-text">保存配置后，点击“生成日报”即可开始任务。</div>
+            </div>
+            <span id="progress-percent" class="progress-percent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div id="result-empty" class="result-empty">尚未生成日报。</div>
+        <div id="result-content" class="result-content hidden">
+          <div class="result-summary">
+            <div class="meta-box">
+              <span class="meta-label">生成时间</span>
+              <strong id="result-time">-</strong>
+            </div>
+            <div class="meta-box">
+              <span class="meta-label">候选资讯数</span>
+              <strong id="result-candidates">-</strong>
+            </div>
+            <div class="meta-box">
+              <span class="meta-label">正文资讯数</span>
+              <strong id="result-articles">-</strong>
+            </div>
+            <div class="meta-box">
+              <span class="meta-label">摘要模式</span>
+              <strong id="result-mode">-</strong>
+            </div>
+          </div>
+          <div class="download-row" id="download-row"></div>
+          <div id="config-summary" class="result-config helper-text"></div>
+          <div class="stats-table-wrapper">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th>站点</th>
+                  <th>抓取数</th>
+                  <th>筛后数</th>
+                  <th>去重后数</th>
+                  <th>最终入选数</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="stats-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>数据源配置</h2>
+            <p>支持启用/停用、调整顺序、修改抓取数量，也可以添加自定义站点。</p>
+          </div>
+          <button type="button" id="add-source-button" class="btn btn-secondary">新增站点</button>
+        </div>
+        <div id="source-list" class="source-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script id="initial-config" type="application/json">{{ initial_config_json | safe }}</script>
+  <script src="/static/app.js?v={{ asset_version }}"></script>
+</body>
+</html>
