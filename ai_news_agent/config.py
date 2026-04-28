@@ -10,6 +10,11 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "default_config.yaml"
 WEB_SAVED_CONFIG_PATH = PROJECT_ROOT / "config" / "saved_web_config.yaml"
+WEB_RUNTIME_PATH_DEFAULTS = {
+    "output_dir": Path("output"),
+    "log_dir": Path("logs"),
+    "temp_dir": Path("output/.tmp"),
+}
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
@@ -84,16 +89,43 @@ def load_web_config() -> dict[str, Any]:
             saved = deepcopy(saved)
             saved["sources"] = _merge_sources_with_defaults(base_config.get("sources", []), saved["sources"])
         base_config = merge_overrides(base_config, saved)
+    normalize_web_runtime_paths(base_config)
     return base_config
 
 
 def save_web_config(config: dict[str, Any]) -> Path:
     config_to_save = deepcopy(config)
+    normalize_web_runtime_paths(config_to_save)
+    _relativize_web_runtime_paths(config_to_save)
     config_to_save.pop("_config_path", None)
     config_to_save.pop("_project_root", None)
     with WEB_SAVED_CONFIG_PATH.open("w", encoding="utf-8") as handle:
         yaml.safe_dump(config_to_save, handle, allow_unicode=True, sort_keys=False)
     return WEB_SAVED_CONFIG_PATH
+
+
+def normalize_web_runtime_paths(config: dict[str, Any]) -> None:
+    """Keep Web UI generated files in this project's downloadable folders."""
+    project_root = Path(config.get("_project_root", PROJECT_ROOT)).resolve()
+    runtime = config.setdefault("runtime", {})
+    for key, relative_path in WEB_RUNTIME_PATH_DEFAULTS.items():
+        runtime[key] = str((project_root / relative_path).resolve())
+
+
+def _relativize_web_runtime_paths(config: dict[str, Any]) -> None:
+    runtime = config.setdefault("runtime", {})
+    project_root = PROJECT_ROOT.resolve()
+    for key in WEB_RUNTIME_PATH_DEFAULTS:
+        value = runtime.get(key)
+        if not value:
+            continue
+        path = Path(value)
+        if not path.is_absolute():
+            continue
+        try:
+            runtime[key] = path.resolve().relative_to(project_root).as_posix()
+        except ValueError:
+            continue
 
 
 def _normalize_config_paths(config: dict[str, Any]) -> None:

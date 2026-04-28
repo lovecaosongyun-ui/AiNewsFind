@@ -1,7 +1,7 @@
 runtime:
-  output_dir: D:\Desktop\GuotouFile\AgentProject\AiNewsFind-GPT\output
-  log_dir: D:\Desktop\GuotouFile\AgentProject\AiNewsFind-GPT\logs
-  temp_dir: D:\Desktop\GuotouFile\AgentProject\AiNewsFind-GPT\output\.tmp
+  output_dir: output
+  log_dir: logs
+  temp_dir: output/.tmp
   request_timeout_seconds: 20
   image_download_timeout_seconds: 20
   retries: 3

@@ -21,6 +21,7 @@ from ai_news_agent.config import (
     load_config,
     load_web_config,
     merge_overrides,
+    normalize_web_runtime_paths,
     save_web_config,
 )
 from ai_news_agent.pipeline import DailyNewsPipeline
@@ -207,7 +208,9 @@ def _normalize_payload(payload: dict[str, Any]) -> dict[str, Any]:
         )
 
     cleaned["sources"] = normalized_sources
-    return merge_overrides(base_config, cleaned)
+    config = merge_overrides(base_config, cleaned)
+    normalize_web_runtime_paths(config)
+    return config
 
 
 def _normalize_string_list(value: Any) -> list[str]:
